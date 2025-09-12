@@ -1,0 +1,11 @@
+# Global owners
+* @fraware
+
+# Core library
+src/Containers/ @fraware
+
+# Tests
+tests/ @fraware
+
+# Documentation
+docs/ @fraware
