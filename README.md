@@ -22,28 +22,6 @@
 - [Contributing](#contributing)
 - [License](#license)
 
-## Features
-
-### Core Container Types
-- **Container Signatures**: Type-safe definitions with shape and position types
-- **Polynomial Functors**: Mathematical foundation with proper functor laws
-- **W-types**: Initial algebras for inductive structures
-- **M-types**: Final coalgebras for coinductive structures
-- **Traversable Instances**: Lawful implementations with proper composition
-
-### Advanced Operations
-- **Custom Allocators**: Memory management optimizations
-- **Move Semantics**: Efficient resource transfer
-- **Emplacement Operations**: In-place construction
-- **Memory Pool Management**: Smart pointers and reference counting
-- **Zero-copy Operations**: Performance-optimized data transfer
-
-### Production Features
-- **Thread Safety**: Concurrent containers with proper synchronization
-- **Performance Monitoring**: Built-in metrics and profiling
-- **Error Handling**: Comprehensive validation and bounds checking
-- **Type Safety**: Complete compile-time safety guarantees
-
 ## Installation
 
 ### Prerequisites
