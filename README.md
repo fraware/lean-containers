@@ -50,12 +50,25 @@
 
 - Lean 4.8.0 or later
 - Lake build system
+- Docker (optional, for containerized usage)
+- Make (optional, for convenience targets)
 
 ### Setup
 
+#### Quick Setup (Recommended)
+
+```bash
+# Clone and set up in one command
+git clone https://github.com/your-org/lean-containers.git
+cd lean-containers
+make dev
+```
+
+#### Manual Setup
+
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/fraware/lean-containers.git
+   git clone https://github.com/your-org/lean-containers.git
    ```
 
 2. **Navigate to the project directory**:
@@ -73,7 +86,65 @@
    lean FinalProductionTest.lean
    ```
 
-## Quick Start
+### Available Makefile Targets
+
+| Target | Description |
+|--------|-------------|
+| `make dev` | Set up local development environment |
+| `make build` | Build the project |
+| `make test` | Run all tests |
+| `make run` | Run the application/CLI locally |
+| `make clean` | Clean build artifacts |
+| `make release-dry` | Test release process (dry run) |
+| `make release` | Build and publish artifacts |
+| `make docker-build` | Build Docker image |
+| `make docker-run` | Run Docker container |
+| `make help` | Show all available targets |
+
+## Quickstart
+
+Get started with lean-containers in under 10 minutes:
+
+### Option 1: Docker (Recommended)
+
+```bash
+# Run the library immediately
+docker run --rm ghcr.io/your-org/lean-containers:latest Main.lean
+
+# Run tests
+docker run --rm ghcr.io/your-org/lean-containers:latest FinalProductionTest.lean
+
+# Interactive shell with the library
+docker run -it --rm ghcr.io/your-org/lean-containers:latest /bin/bash
+```
+
+### Option 2: Lake Package
+
+```bash
+# Add to your Lakefile.lean
+require lean-containers from git "https://github.com/your-org/lean-containers.git"
+
+# Then in your Lean file
+import Containers
+```
+
+### Option 3: Local Development
+
+```bash
+# Clone and build
+git clone https://github.com/your-org/lean-containers.git
+cd lean-containers
+
+# One-command setup and run
+make dev && make run
+
+# Or use individual commands
+make build    # Build the project
+make test     # Run all tests
+make run      # Run the application
+```
+
+### Quick Example
 
 ```lean
 import Containers

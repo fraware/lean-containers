@@ -1,0 +1,77 @@
+# lean-containers Makefile (Windows version)
+# Provides convenient targets for development, testing, and release
+
+.PHONY: help dev run release test clean build install
+
+# Default target
+help:
+	@echo lean-containers Makefile
+	@echo Available targets:
+	@echo   dev           Set up local development environment
+	@echo   build         Build the project
+	@echo   test          Run all tests
+	@echo   run           Run the application/CLI locally
+	@echo   clean         Clean build artifacts
+	@echo   release-dry   Build and test release artifacts (dry run)
+	@echo   release       Build and publish artifacts
+	@echo   docker-build  Build Docker image
+	@echo   docker-run    Run Docker container
+	@echo   install       Show installation instructions
+
+dev:
+	@echo Setting up development environment...
+	@where lean >nul 2>&1 || (echo Installing Lean 4... && curl -sSf https://raw.githubusercontent.com/leanprover/lean4/master/elan-init.sh | sh)
+	@where lake >nul 2>&1 || echo Lake is included with Lean 4
+	lake update
+	lake build
+	@echo Development environment ready!
+
+run:
+	@echo Running lean-containers...
+	lake build
+	lean Main.lean
+
+test:
+	@echo Running production tests...
+	lake build
+	lean FinalProductionTest.lean
+	@echo All tests passed!
+
+build:
+	@echo Building lean-containers...
+	lake build
+
+clean:
+	@echo Cleaning build artifacts...
+	lake clean
+
+install:
+	@echo To use lean-containers in your Lake project, add to your Lakefile:
+	@echo require lean-containers from git "https://github.com/your-org/lean-containers.git"
+
+release-dry:
+	@echo Dry run release process...
+	@echo 1. Building project...
+	lake build
+	@echo 2. Running tests...
+	lean FinalProductionTest.lean
+	@where docker >nul 2>&1 && (echo 3. Testing Docker build... && docker build -t lean-containers:test . && echo 4. Testing Docker run... && docker run --rm lean-containers:test) || echo 3. Skipping Docker tests (Docker not found)
+	@echo Release dry run completed successfully!
+
+release:
+	@echo Running release script...
+	@if exist scripts\release.bat (scripts\release.bat) else (echo Building release artifacts manually... && $(MAKE) build && $(MAKE) test && echo Building Docker image... && docker build -t ghcr.io/your-org/lean-containers:latest . && docker build -t ghcr.io/your-org/lean-containers:v1.0.0 . && echo Release artifacts built successfully!)
+
+docker-build:
+	docker build -t lean-containers .
+
+docker-run:
+	docker run --rm lean-containers
+
+# CI/CD targets
+ci-test:
+	lake build
+	lean FinalProductionTest.lean
+
+ci-build:
+	lake build

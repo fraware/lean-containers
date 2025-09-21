@@ -1,0 +1,30 @@
+# Ignore files not needed in Docker image
+.git
+.gitignore
+README.md
+Makefile
+.github
+*.md
+.vscode
+.idea
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
+
+# Ignore build artifacts that will be rebuilt
+build/
+.lake/build/
+.lake/temp/
+.lake/logs/
+.lake/ir/
+.lake/olean/
+
+# Ignore test artifacts
+*.olean
+*.c
+*.o
+*.so
+*.dylib
+*.dll
+*.exe
