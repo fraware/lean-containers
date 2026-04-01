@@ -1,8 +1,7 @@
 /-!
-# Containers Library
+# Containers
 
-This is the main module for the lean-containers library providing comprehensive
-container types and operations for production use.
+Polynomial functors, container signatures, W-types, and related definitions.
 -/
 
 namespace Containers
@@ -30,7 +29,7 @@ def W.fold {sig : Container} {X : Type} (alg : Poly sig X → X) : W sig → X :
   fun w => match w with
   | W.sup s children => alg ⟨s, fun p => W.fold alg (children p)⟩
 
-/-- M-type as final coalgebra -/
+/-- Nominal "M-type" shape (not a developed final-coalgebra API; see README). -/
 inductive M (sig : Container) : Type where
   | intro (shape : sig.shape) (children : sig.pos shape → M sig) : M sig
 

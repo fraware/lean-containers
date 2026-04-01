@@ -28,12 +28,17 @@ if [ ! -f "Lakefile.lean" ]; then
     exit 1
 fi
 
-# Get version from Lakefile.lean
-VERSION=$(grep "version :=" Lakefile.lean | sed 's/.*version := "\(.*\)".*/\1/')
-if [ -z "$VERSION" ]; then
-    print_error "Could not determine version from Lakefile.lean"
+# Version: single line in VERSION (X.Y.Z), must match Lakefile package version
+if [ ! -f "VERSION" ]; then
+    print_error "VERSION file missing at repository root"
     exit 1
 fi
+VERSION="$(tr -d '\r\n' < VERSION | tr -d ' ')"
+if ! echo "$VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+    print_error "VERSION must be X.Y.Z"
+    exit 1
+fi
+TAG="v$VERSION"
 
 print_status "Starting release process for version $VERSION"
 
@@ -57,8 +62,8 @@ make test
 # Step 3: Test Docker build (if available)
 if [ "$SKIP_DOCKER" = false ]; then
     print_status "Step 3: Testing Docker build..."
-    docker build -t lean-containers:$VERSION .
-    docker build -t lean-containers:latest .
+    docker build --build-arg VERSION=$VERSION -t lean-containers:$VERSION .
+    docker build --build-arg VERSION=$VERSION -t lean-containers:latest .
     
     print_status "Step 4: Testing Docker run..."
     docker run --rm lean-containers:$VERSION
@@ -76,27 +81,30 @@ cp lean-toolchain release/
 cp Main.lean release/
 cp FinalProductionTest.lean release/
 cp README.md release/
+cp VERSION release/
 cp Makefile release/
 cp Dockerfile release/
 cp .dockerignore release/
+cp LICENSE release/
+cp VERSION release/
 
-tar -czf lean-containers-$VERSION.tar.gz -C release .
+tar -czf lean-containers-$TAG.tar.gz -C release .
 rm -rf release
 
-print_status "Release archive created: lean-containers-$VERSION.tar.gz"
+print_status "Release archive created: lean-containers-$TAG.tar.gz"
 
 # Step 5: Summary
 print_status "Release process completed successfully!"
 echo ""
 echo "Next steps:"
-echo "1. Create a GitHub release with tag v$VERSION"
-echo "2. Upload lean-containers-$VERSION.tar.gz to the release"
+echo "1. Create a GitHub release with tag $TAG"
+echo "2. Upload lean-containers-$TAG.tar.gz to the release"
 if [ "$SKIP_DOCKER" = false ]; then
     echo "3. Push Docker images:"
-    echo "   docker tag lean-containers:$VERSION ghcr.io/your-org/lean-containers:$VERSION"
-    echo "   docker tag lean-containers:latest ghcr.io/your-org/lean-containers:latest"
-    echo "   docker push ghcr.io/your-org/lean-containers:$VERSION"
-    echo "   docker push ghcr.io/your-org/lean-containers:latest"
+    echo "   docker tag lean-containers:$VERSION ghcr.io/fraware/lean-containers:$VERSION"
+    echo "   docker tag lean-containers:latest ghcr.io/fraware/lean-containers:latest"
+    echo "   docker push ghcr.io/fraware/lean-containers:$VERSION"
+    echo "   docker push ghcr.io/fraware/lean-containers:latest"
 fi
 echo "4. Update documentation if needed"
 echo ""

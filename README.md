@@ -1,392 +1,96 @@
 # lean-containers
 
-![Lean 4](https://img.shields.io/badge/Lean-4.8.0-blue.svg)
-![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen.svg)
-![License](https://img.shields.io/badge/License-MIT-green.svg)
-![Production Ready](https://img.shields.io/badge/Production-Ready-success.svg)
+`lean-containers` is a Lean 4 library for container signatures, polynomial functors, and W-types.  
+The package is intentionally small, mathlib-free, and focused on a clear core API.
 
-## Overview
+## Install and import
 
-**lean-containers** is a container library for Lean 4 that provides type-safe, mathematically rigorous implementations of container types and operations. Built on category-theoretic foundations, it offers polynomial functors, W-types, M-types, and advanced container operations for production use.
+Add this to your `Lakefile.lean`:
 
-## Table of Contents
-
-- [Features](#features)
-- [Installation](#installation)
-- [Quick Start](#quick-start)
-- [Core Concepts](#core-concepts)
-- [Usage Examples](#usage-examples)
-- [Architecture](#architecture)
-- [Performance](#performance)
-- [API Reference](#api-reference)
-- [Contributing](#contributing)
-- [License](#license)
-
-## Installation
-
-### Prerequisites
-
-- Lean 4.8.0 or later
-- Lake build system
-- Docker (optional, for containerized usage)
-- Make (optional, for convenience targets)
-
-### Setup
-
-#### Quick Setup (Recommended)
-
-```bash
-# Clone and set up in one command
-git clone https://github.com/your-org/lean-containers.git
-cd lean-containers
-make dev
+```lean
+require lean-containers from git
+  "https://github.com/fraware/lean-containers.git" @ "v0.1.0"
 ```
 
-#### Manual Setup
+Then import:
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/your-org/lean-containers.git
-   ```
-
-2. **Navigate to the project directory**:
-   ```bash
-   cd lean-containers
-   ```
-
-3. **Build the project**:
-   ```bash
-   lake build
-   ```
-
-4. **Run tests**:
-   ```bash
-   lean FinalProductionTest.lean
-   ```
-
-### Available Makefile Targets
-
-| Target | Description |
-|--------|-------------|
-| `make dev` | Set up local development environment |
-| `make build` | Build the project |
-| `make test` | Run all tests |
-| `make run` | Run the application/CLI locally |
-| `make clean` | Clean build artifacts |
-| `make release-dry` | Test release process (dry run) |
-| `make release` | Build and publish artifacts |
-| `make docker-build` | Build Docker image |
-| `make docker-run` | Run Docker container |
-| `make help` | Show all available targets |
-
-## Quickstart
-
-Get started with lean-containers in under 10 minutes:
-
-### Option 1: Docker (Recommended)
-
-```bash
-# Run the library immediately
-docker run --rm ghcr.io/your-org/lean-containers:latest Main.lean
-
-# Run tests
-docker run --rm ghcr.io/your-org/lean-containers:latest FinalProductionTest.lean
-
-# Interactive shell with the library
-docker run -it --rm ghcr.io/your-org/lean-containers:latest /bin/bash
-```
-
-### Option 2: Lake Package
-
-```bash
-# Add to your Lakefile.lean
-require lean-containers from git "https://github.com/your-org/lean-containers.git"
-
-# Then in your Lean file
+```lean
 import Containers
 ```
 
-### Option 3: Local Development
-
-```bash
-# Clone and build
-git clone https://github.com/your-org/lean-containers.git
-cd lean-containers
-
-# One-command setup and run
-make dev && make run
-
-# Or use individual commands
-make build    # Build the project
-make test     # Run all tests
-make run      # Run the application
-```
-
-### Quick Example
+## Minimal example
 
 ```lean
 import Containers
 
 open Containers
 
--- Define a container signature
-def ListSig : Container :=
-  { shape := Option Unit, pos := fun _ => Unit }
-
--- Create a polynomial functor
-def myPoly : Poly ListSig Nat :=
+def p : Poly ListSig Nat :=
   { shape := some (), children := fun _ => 42 }
 
--- Apply functor mapping
-def mappedPoly : Poly ListSig String :=
-  Poly.map (fun n => s!"Number: {n}") myPoly
-
--- Check types
-#check ListSig
-#check myPoly
-#check mappedPoly
+#check Poly.map (fun n => n + 1) p
 ```
 
-## Core Concepts
+## API surface
 
-### Container Signatures
+- `Container`: container signatures (`shape`, `pos`)
+- `Poly sig α`: polynomial functor representation
+- `Poly.map`: functorial map on `Poly`
+- `W sig`, `W.fold`: inductive W-types and fold
+- `M sig`: nominal placeholder for future coalgebra-oriented expansion
+- example signatures: `ListSig`, `TreeSig`
 
-A container signature consists of:
-- **Shape Type**: Defines the structure of the container
-- **Position Function**: Maps shapes to their child positions
+## Compatibility
 
-```lean
-structure Container where
-  shape : Type
-  pos : shape → Type
-```
+| Item | Value |
+|------|-------|
+| Lean toolchain | `leanprover/lean4:v4.15.0` (`lean-toolchain`) |
+| Lake manifest | root `lake-manifest.json` |
+| Package version | `0.1.0` (`VERSION`) and `v!"0.1.0"` in `Lakefile.lean` |
+| SPDX license | `MIT` |
 
-### Polynomial Functors
+## Local development
 
-Polynomial functors provide the mathematical foundation:
-
-```lean
-structure Poly (sig : Container) (α : Type) where
-  shape : sig.shape
-  children : sig.pos shape → α
-```
-
-### W-types (Initial Algebras)
-
-W-types represent inductive structures:
-
-```lean
-inductive W (sig : Container) : Type where
-  | sup (s : sig.shape) (children : sig.pos s → W sig) : W sig
-```
-
-## Usage Examples
-
-### Basic Container Operations
-
-```lean
--- Define a tree container
-def TreeSig (α : Type) : Container :=
-  { shape := Option α, pos := fun s => match s with 
-    | none => Empty 
-    | some _ => Fin 2 }
-
--- Create a tree structure
-def myTree : W (TreeSig Nat) :=
-  W.sup (some 5) (fun _ => W.sup none (fun _ => False.elim (nomatch ())))
-```
-
-### Functor Laws
-
-```lean
--- Identity law
-theorem map_id : Poly.map id p = p := rfl
-
--- Composition law  
-theorem map_comp : Poly.map (g ∘ f) p = Poly.map g (Poly.map f p) := rfl
-```
-
-### Advanced Operations
-
-```lean
--- Custom fold operation
-def sumTree : Poly (TreeSig Nat) Nat → Nat
-  | { shape := none, children := _ } => 0
-  | { shape := some n, children := _ } => n
-
--- Apply fold to W-type
-def treeSum : Nat := W.fold sumTree myTree
-```
-
-## Architecture
-
-```
-lean-containers/
-├── src/
-│   └── Containers.lean          # Main production module
-├── FinalProductionTest.lean     # Production test suite
-├── Lakefile.lean               # Build configuration
-├── lean-toolchain              # Lean version specification
-└── README.md                   # This file
-```
-
-### Module Structure
-
-- **Core Module**: `src/Containers.lean` contains all essential functionality
-- **Self-contained**: No complex dependencies or circular imports
-- **Production-ready**: Optimized for deployment with minimal footprint
-
-## Performance
-
-### Time Complexity
-- **Random Access**: O(1) for indexed containers
-- **Hash Operations**: O(1) average-case for associative containers
-- **Tree Operations**: O(log n) for balanced structures
-- **Dynamic Arrays**: O(1) amortized append operations
-
-### Space Complexity
-- **Memory Efficient**: Optimized storage layouts
-- **Zero-copy**: In-place operations where possible
-- **Smart Pointers**: Automatic memory management
-- **Sparse Storage**: Efficient handling of sparse data
-
-### Benchmarks
-
-| Operation | Time Complexity | Space Complexity |
-|-----------|----------------|------------------|
-| Container Creation | O(1) | O(1) |
-| Functor Mapping | O(n) | O(1) |
-| W-type Construction | O(n) | O(n) |
-| Fold Operations | O(n) | O(1) |
-
-## API Reference
-
-### Core Types
-
-```lean
--- Container signature
-structure Container where
-  shape : Type
-  pos : shape → Type
-
--- Polynomial functor
-structure Poly (sig : Container) (α : Type) where
-  shape : sig.shape
-  children : sig.pos shape → α
-
--- W-type (initial algebra)
-inductive W (sig : Container) : Type where
-  | sup (s : sig.shape) (children : sig.pos s → W sig) : W sig
-```
-
-### Core Functions
-
-```lean
--- Functor mapping
-def Poly.map {sig : Container} {α β : Type} 
-  (f : α → β) (p : Poly sig α) : Poly sig β
-
--- W-type fold
-def W.fold {sig : Container} {X : Type} 
-  (alg : Poly sig X → X) : W sig → X
-```
-
-### Type Classes
-
-```lean
--- Functor instance
-instance {sig : Container} : Functor (Poly sig)
-
--- Lawful functor instance  
-instance {sig : Container} : LawfulFunctor (Poly sig)
-```
-
-## Mathematical Foundations
-
-The library is built on solid mathematical foundations:
-
-### Category Theory
-- **Polynomial Functors**: Based on polynomial functors in category theory
-- **Initial Algebras**: W-types implement initial algebras
-- **Final Coalgebras**: M-types implement final coalgebras
-- **Functor Laws**: All instances satisfy mathematical functor laws
-
-### Type Theory
-- **Dependent Types**: Leverages Lean 4's dependent type system
-- **Universe Levels**: Proper handling of universe polymorphism
-- **Type Safety**: Complete compile-time safety guarantees
-
-## Production Deployment
-
-### Build System
 ```bash
-# Clean build
-lake clean && lake update && lake build
-
-# Verify functionality
-lean FinalProductionTest.lean
+lake build
+lake env lean FinalProductionTest.lean
+lake exe lean-containers
 ```
 
-### Integration
-```lean
--- Import the library
-import Containers
+Windows release checks:
 
--- Use in your project
-open Containers
--- Your container operations here
+```bat
+scripts\check-release-consistency.bat
 ```
+
+Unix release checks:
+
+```bash
+bash scripts/check-release-consistency.sh
+```
+
+## Docker (optional)
+
+```bash
+docker build -t lean-containers .
+docker run --rm lean-containers Main.lean
+docker run --rm lean-containers FinalProductionTest.lean
+```
+
+## Scope and limitations
+
+- No mathlib dependency
+- No category-theory bridge layer yet
+- `M sig` is not a full final-coalgebra development
 
 ## Contributing
 
-We welcome contributions to lean-containers! Here's how to get started:
+See `CONTRIBUTING.md`.
 
-### Development Setup
+## Maintainer release process
 
-1. **Fork the repository**
-2. **Create a feature branch**:
-   ```bash
-   git checkout -b feature/your-feature-name
-   ```
-3. **Make your changes**
-4. **Run tests**:
-   ```bash
-   lean FinalProductionTest.lean
-   ```
-5. **Commit your changes**:
-   ```bash
-   git commit -m "Add your feature"
-   ```
-6. **Push and create a Pull Request**
-
-### Code Standards
-
-- Follow Lean 4 best practices
-- Ensure all code compiles without errors
-- Add appropriate documentation
-- Include tests for new functionality
-- Maintain mathematical rigor
-
-### Areas for Contribution
-
-- **Performance Optimizations**: Memory management improvements
-- **Additional Container Types**: New container implementations
-- **Mathematical Properties**: Proofs of additional laws
-- **Documentation**: Examples and tutorials
-- **Testing**: Comprehensive test coverage
+See `DISTRIBUTION_README.md`.
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- Built on Lean 4's powerful type system
-- Inspired by category-theoretic approaches to functional programming
-- Community contributions and feedback
-
----
-
-**Status**: Production Ready | **Version**: 1.0.0 | **Lean**: 4.8.0+
-
-For questions, issues, or contributions, please visit our [GitHub repository](https://github.com/fraware/lean-containers).
+MIT license in `LICENSE`.

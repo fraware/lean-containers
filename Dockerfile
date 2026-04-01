@@ -2,7 +2,7 @@
 # Multi-stage build for optimal image size
 
 # Build stage
-FROM leanprover/lean4:4.8.0 AS builder
+FROM leanprover/lean4:4.15.0 AS builder
 
 # Set working directory
 WORKDIR /app
@@ -14,7 +14,8 @@ COPY . .
 RUN lake update && lake build
 
 # Runtime stage
-FROM leanprover/lean4:4.8.0 AS runtime
+FROM leanprover/lean4:4.15.0 AS runtime
+ARG VERSION=dev
 
 # Set working directory
 WORKDIR /app
@@ -29,15 +30,15 @@ COPY --from=builder /app/src /app/src
 COPY --from=builder /app/Main.lean /app/Main.lean
 COPY --from=builder /app/FinalProductionTest.lean /app/FinalProductionTest.lean
 
-# Set entrypoint
-ENTRYPOINT ["lean"]
+# Resolve imports via Lake (library lives under .lake)
+ENTRYPOINT ["lake", "env", "lean"]
 
 # Default command
 CMD ["Main.lean"]
 
 # Labels for metadata
 LABEL org.opencontainers.image.title="lean-containers"
-LABEL org.opencontainers.image.description="A container library for Lean 4 with type-safe, mathematically rigorous implementations"
-LABEL org.opencontainers.image.version="1.0.0"
-LABEL org.opencontainers.image.source="https://github.com/your-org/lean-containers"
+LABEL org.opencontainers.image.description="Lean 4: container signatures, polynomial functors, and W-types (mathlib-free)"
+LABEL org.opencontainers.image.version="${VERSION}"
+LABEL org.opencontainers.image.source="https://github.com/fraware/lean-containers"
 LABEL org.opencontainers.image.licenses="MIT"

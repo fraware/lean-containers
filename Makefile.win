@@ -29,12 +29,12 @@ dev:
 run:
 	@echo Running lean-containers...
 	lake build
-	lean Main.lean
+	lake env lean Main.lean
 
 test:
 	@echo Running production tests...
 	lake build
-	lean FinalProductionTest.lean
+	lake env lean FinalProductionTest.lean
 	@echo All tests passed!
 
 build:
@@ -47,20 +47,26 @@ clean:
 
 install:
 	@echo To use lean-containers in your Lake project, add to your Lakefile:
-	@echo require lean-containers from git "https://github.com/your-org/lean-containers.git"
+	@echo require lean-containers from git "https://github.com/fraware/lean-containers.git"
+
+release-check:
+	@echo Validating release metadata consistency...
+	scripts\check-release-consistency.bat
 
 release-dry:
 	@echo Dry run release process...
+	@echo 0. Validating release metadata...
+	make -f Makefile.win release-check
 	@echo 1. Building project...
 	lake build
 	@echo 2. Running tests...
-	lean FinalProductionTest.lean
+	lake env lean FinalProductionTest.lean
 	@where docker >nul 2>&1 && (echo 3. Testing Docker build... && docker build -t lean-containers:test . && echo 4. Testing Docker run... && docker run --rm lean-containers:test) || echo 3. Skipping Docker tests (Docker not found)
 	@echo Release dry run completed successfully!
 
 release:
 	@echo Running release script...
-	@if exist scripts\release.bat (scripts\release.bat) else (echo Building release artifacts manually... && $(MAKE) build && $(MAKE) test && echo Building Docker image... && docker build -t ghcr.io/your-org/lean-containers:latest . && docker build -t ghcr.io/your-org/lean-containers:v1.0.0 . && echo Release artifacts built successfully!)
+	@if exist scripts\release.bat (scripts\release.bat) else (echo Building release artifacts manually... && $(MAKE) build && $(MAKE) test && echo Building Docker image... && docker build --build-arg VERSION=dev -t ghcr.io/fraware/lean-containers:latest . && echo Release artifacts built successfully! && echo To publish: docker push ghcr.io/fraware/lean-containers:latest)
 
 docker-build:
 	docker build -t lean-containers .
@@ -71,7 +77,7 @@ docker-run:
 # CI/CD targets
 ci-test:
 	lake build
-	lean FinalProductionTest.lean
+	lake env lean FinalProductionTest.lean
 
 ci-build:
 	lake build

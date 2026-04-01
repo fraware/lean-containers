@@ -7,5 +7,4 @@ This is the main entry point for the lean-containers library.
 -/
 
 def main : IO Unit := do
-  IO.println "lean-containers library loaded successfully"
-  IO.println "Available examples: List, Vec, Rose, Stream"
+  IO.println "lean-containers: demo executable (see README and src/Containers.lean)."

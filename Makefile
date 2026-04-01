@@ -1,7 +1,8 @@
 # lean-containers Makefile
 # Provides convenient targets for development, testing, and release
 
-.PHONY: help dev run release test clean build install
+.PHONY: help dev run release test clean build install release-check
+RELEASE_VERSION := $(shell tr -d '\r\n' < VERSION)
 
 # Default target
 help: ## Show this help message
@@ -26,12 +27,12 @@ dev: ## Set up local development environment
 run: ## Run the application/CLI locally
 	@echo "Running lean-containers..."
 	lake build
-	lean Main.lean
+	lake env lean Main.lean
 
 test: ## Run all tests
 	@echo "Running production tests..."
 	lake build
-	lean FinalProductionTest.lean
+	lake env lean FinalProductionTest.lean
 	@echo "All tests passed!"
 
 build: ## Build the project
@@ -44,14 +45,20 @@ clean: ## Clean build artifacts
 
 install: ## Install as a dependency (for Lake projects)
 	@echo "To use lean-containers in your Lake project, add to your Lakefile:"
-	@echo "require lean-containers from git \"https://github.com/your-org/lean-containers.git\""
+	@echo "require lean-containers from git \"https://github.com/fraware/lean-containers.git\""
+
+release-check: ## Validate release metadata consistency
+	@chmod +x scripts/check-release-consistency.sh
+	@./scripts/check-release-consistency.sh
 
 release-dry: ## Build and test release artifacts (dry run)
 	@echo "Dry run release process..."
+	@echo "0. Validating release metadata..."
+	$(MAKE) release-check
 	@echo "1. Building project..."
 	lake build
 	@echo "2. Running tests..."
-	lean FinalProductionTest.lean
+	lake env lean FinalProductionTest.lean
 	@echo "3. Testing Docker build..."
 	docker build -t lean-containers:test .
 	@echo "4. Testing Docker run..."
@@ -69,12 +76,12 @@ release: ## Build and publish artifacts
 		$(MAKE) build; \
 		$(MAKE) test; \
 		echo "Building Docker image..."; \
-		docker build -t ghcr.io/your-org/lean-containers:latest .; \
-		docker build -t ghcr.io/your-org/lean-containers:v1.0.0 .; \
+		docker build --build-arg VERSION=$(RELEASE_VERSION) -t ghcr.io/fraware/lean-containers:latest .; \
+		docker build --build-arg VERSION=$(RELEASE_VERSION) -t ghcr.io/fraware/lean-containers:$(RELEASE_VERSION) .; \
 		echo "Release artifacts built successfully!"; \
 		echo "To publish:"; \
-		echo "  docker push ghcr.io/your-org/lean-containers:latest"; \
-		echo "  docker push ghcr.io/your-org/lean-containers:v1.0.0"; \
+		echo "  docker push ghcr.io/fraware/lean-containers:latest"; \
+		echo "  docker push ghcr.io/fraware/lean-containers:$(RELEASE_VERSION)"; \
 	fi
 
 docker-build: ## Build Docker image
@@ -86,7 +93,7 @@ docker-run: ## Run Docker container
 # CI/CD targets
 ci-test: ## Run tests for CI
 	lake build
-	lean FinalProductionTest.lean
+	lake env lean FinalProductionTest.lean
 
 ci-build: ## Build for CI
 	lake build

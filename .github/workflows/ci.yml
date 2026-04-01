@@ -20,7 +20,7 @@ jobs:
     - name: Set up Lean 4
       uses: leanprover-community/setup-lean4@v2
       with:
-        lean-version: '4.8.0'
+        lean-version: '4.15.0'
         
     - name: Cache Lake dependencies
       uses: actions/cache@v3
@@ -34,7 +34,7 @@ jobs:
       run: lake build
       
     - name: Run tests
-      run: lean FinalProductionTest.lean
+      run: lake env lean FinalProductionTest.lean
       
     - name: Test Makefile targets
       run: |
@@ -93,6 +93,16 @@ jobs:
           type=semver,pattern={{version}}
           type=semver,pattern={{major}}.{{minor}}
           type=raw,value=latest,enable={{is_default_branch}}
+
+    - name: Validate release metadata consistency
+      id: release_vars
+      run: |
+        TAG="${{ github.event.release.tag_name }}"
+        chmod +x scripts/check-release-consistency.sh
+        scripts/check-release-consistency.sh "$TAG"
+        VERSION="${TAG#v}"
+        echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+        echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
@@ -101,17 +111,22 @@ jobs:
         push: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
+        build-args: |
+          VERSION=${{ steps.release_vars.outputs.version }}
         
     - name: Create Release Artifacts
       run: |
+        TAG="${{ steps.release_vars.outputs.tag }}"
         mkdir -p release
         cp -r src release/
         cp Lakefile.lean release/
+        cp VERSION release/
         cp lake-manifest.json release/
         cp lean-toolchain release/
         cp Main.lean release/
         cp FinalProductionTest.lean release/
-        tar -czf lean-containers-${{ github.event.release.tag_name }}.tar.gz -C release .
+        cp LICENSE release/
+        tar -czf lean-containers-${TAG}.tar.gz -C release .
         
     - name: Upload Release Artifacts
       uses: actions/upload-release-asset@v1

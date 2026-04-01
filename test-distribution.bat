@@ -18,7 +18,7 @@ echo.
 
 REM Test 2: Run tests
 echo [TEST 2] Running tests...
-lean FinalProductionTest.lean
+lake env lean FinalProductionTest.lean
 if %errorlevel% neq 0 (
     echo [FAIL] Tests failed
     exit /b 1
@@ -28,7 +28,7 @@ echo.
 
 REM Test 3: Run main application
 echo [TEST 3] Running main application...
-lean Main.lean
+lake env lean Main.lean
 if %errorlevel% neq 0 (
     echo [FAIL] Main application failed
     exit /b 1

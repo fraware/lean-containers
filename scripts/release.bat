@@ -9,19 +9,15 @@ if not exist "Lakefile.lean" (
     exit /b 1
 )
 
-REM Get version from Lakefile.lean
-for /f "tokens=2 delims=:=" %%a in ('findstr "version :=" Lakefile.lean') do (
-    set VERSION=%%a
-    set VERSION=!VERSION:"=!
-    set VERSION=!VERSION: =!
-)
-
-if "%VERSION%"=="" (
-    echo [ERROR] Could not determine version from Lakefile.lean
+if not exist "VERSION" (
+    echo [ERROR] VERSION file missing at repository root
     exit /b 1
 )
+set /p VERSION=<VERSION
+set VERSION=%VERSION: =%
 
 echo [INFO] Starting release process for version %VERSION%
+set TAG=v%VERSION%
 
 REM Check if Docker is available
 docker --version >nul 2>&1
@@ -44,8 +40,8 @@ make test
 REM Step 3: Test Docker build (if available)
 if "%SKIP_DOCKER%"=="false" (
     echo [INFO] Step 3: Testing Docker build...
-    docker build -t lean-containers:%VERSION% .
-    docker build -t lean-containers:latest .
+    docker build --build-arg VERSION=%VERSION% -t lean-containers:%VERSION% .
+    docker build --build-arg VERSION=%VERSION% -t lean-containers:latest .
     
     echo [INFO] Step 4: Testing Docker run...
     docker run --rm lean-containers:%VERSION%
@@ -64,27 +60,30 @@ copy lean-toolchain release\
 copy Main.lean release\
 copy FinalProductionTest.lean release\
 copy README.md release\
+copy VERSION release\
 copy Makefile release\
 copy Dockerfile release\
 copy .dockerignore release\
+copy LICENSE release\
+copy VERSION release\
 
 REM Create tar archive (requires tar command available in Windows 10+)
-tar -czf lean-containers-%VERSION%.tar.gz -C release .
+tar -czf lean-containers-%TAG%.tar.gz -C release .
 
-echo [INFO] Release archive created: lean-containers-%VERSION%.tar.gz
+echo [INFO] Release archive created: lean-containers-%TAG%.tar.gz
 
 REM Step 5: Summary
 echo [INFO] Release process completed successfully!
 echo.
 echo Next steps:
-echo 1. Create a GitHub release with tag v%VERSION%
-echo 2. Upload lean-containers-%VERSION%.tar.gz to the release
+echo 1. Create a GitHub release with tag %TAG%
+echo 2. Upload lean-containers-%TAG%.tar.gz to the release
 if "%SKIP_DOCKER%"=="false" (
     echo 3. Push Docker images:
-    echo    docker tag lean-containers:%VERSION% ghcr.io/your-org/lean-containers:%VERSION%
-    echo    docker tag lean-containers:latest ghcr.io/your-org/lean-containers:latest
-    echo    docker push ghcr.io/your-org/lean-containers:%VERSION%
-    echo    docker push ghcr.io/your-org/lean-containers:latest
+    echo    docker tag lean-containers:%VERSION% ghcr.io/fraware/lean-containers:%VERSION%
+    echo    docker tag lean-containers:latest ghcr.io/fraware/lean-containers:latest
+    echo    docker push ghcr.io/fraware/lean-containers:%VERSION%
+    echo    docker push ghcr.io/fraware/lean-containers:latest
 )
 echo 4. Update documentation if needed
 echo.
