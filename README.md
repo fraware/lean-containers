@@ -1,7 +1,11 @@
+<div align="center">
+
 # lean-containers
 
 `lean-containers` is a Lean 4 library for container signatures, polynomial functors, and W-types.  
 The package is intentionally small, mathlib-free, and focused on a clear core API.
+
+</div>
 
 ## Install and import
 
