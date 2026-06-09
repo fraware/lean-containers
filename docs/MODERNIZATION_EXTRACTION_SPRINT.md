@@ -8,7 +8,7 @@ This document records the first modernization and extraction plan for `lean-cont
 
 Current constraints:
 
-- Current toolchain in `lean-toolchain`: `leanprover/lean4:v4.15.0`.
+- Current toolchain in `lean-toolchain`: `leanprover/lean4:v4.31.0-rc2` (matches Mathlib master at sprint time).
 - Upstream Mathlib baseline for this sprint: Lean 4.31 line.
 - This repository has no Mathlib dependency by design.
 - There is no category-theory bridge layer yet.
@@ -144,4 +144,18 @@ The following should remain repository-local during this sprint:
 
 ## Build certification status
 
-This document is a planning and extraction artifact. It does not certify that the repository has been built on Lean 4.31 yet. Certification requires a successful local or CI run of the commands in Gate 1.
+Certified on branch `modernize/lean-4-31-extraction` (2026-06-09) with toolchain `leanprover/lean4:v4.31.0-rc2`:
+
+| Command | Result |
+|---------|--------|
+| `lake update` | Pass |
+| `lake build` | Pass |
+| `lake env lean FinalProductionTest.lean` | Pass |
+| `lake exe lean-containers` | Pass |
+| `lake env lean Examples.lean` | Pass |
+
+Gate 2 (named simp lemmas for `Poly.map` and `W.fold`) and `docs/EXTRACTION_LEDGER.md` are complete on this branch.
+
+### Environment note (Windows)
+
+`elan toolchain install` and initial `lake update` failed with `CRYPT_E_NO_REVOCATION_CHECK` (Windows schannel CRL check). Workaround: download the release zip with `curl --ssl-no-revoke` and install into `~/.elan/toolchains/`. This is an environment/network issue, not a repository code blocker.

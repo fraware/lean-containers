@@ -20,7 +20,7 @@ jobs:
     - name: Set up Lean 4
       uses: leanprover-community/setup-lean4@v2
       with:
-        lean-version: '4.15.0'
+        lean-version: '4.31.0-rc2'
         
     - name: Cache Lake dependencies
       uses: actions/cache@v3

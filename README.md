@@ -48,7 +48,7 @@ def p : Poly ListSig Nat :=
 
 | Item | Value |
 |------|-------|
-| Lean toolchain | `leanprover/lean4:v4.15.0` (`lean-toolchain`) |
+| Lean toolchain | `leanprover/lean4:v4.31.0-rc2` (`lean-toolchain`) |
 | Lake manifest | root `lake-manifest.json` |
 | Package version | `0.1.0` (`VERSION`) and `v!"0.1.0"` in `Lakefile.lean` |
 | SPDX license | `MIT` |
