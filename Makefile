@@ -30,9 +30,11 @@ run: ## Run the application/CLI locally
 	lake env lean Main.lean
 
 test: ## Run all tests
-	@echo "Running production tests..."
+	@echo "Running smoke tests..."
 	lake build
 	lake env lean FinalProductionTest.lean
+	lake env lean Examples.lean
+	lake env lean CSLibExamples.lean
 	@echo "All tests passed!"
 
 build: ## Build the project
@@ -58,7 +60,7 @@ release-dry: ## Build and test release artifacts (dry run)
 	@echo "1. Building project..."
 	lake build
 	@echo "2. Running tests..."
-	lake env lean FinalProductionTest.lean
+	$(MAKE) test
 	@echo "3. Testing Docker build..."
 	docker build -t lean-containers:test .
 	@echo "4. Testing Docker run..."
@@ -92,8 +94,7 @@ docker-run: ## Run Docker container
 
 # CI/CD targets
 ci-test: ## Run tests for CI
-	lake build
-	lake env lean FinalProductionTest.lean
+	$(MAKE) test
 
 ci-build: ## Build for CI
 	lake build

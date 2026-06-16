@@ -1,6 +1,6 @@
 # Distribution notes (maintainers)
 
-This document defines the release contract for this repository.
+This document describes the release process for this repository.
 
 ## Release source of truth
 

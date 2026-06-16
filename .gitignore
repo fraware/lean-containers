@@ -1,0 +1,31 @@
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Lake / Lean build artifacts (community convention)
+/build/
+/lake-packages/
+/lakefile.olean
+/.lake/
+
+# Compiled Lean artifacts outside .lake
+*.olean
+*.ilean
+*.trace
+*.c
+*.o
+*.so
+*.dylib
+*.dll
+*.exe
+
+# Editor / IDE
+.vscode/*
+!.vscode/settings.json
+.idea/
+*.swp
+*~

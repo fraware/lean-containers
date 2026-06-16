@@ -48,7 +48,7 @@ def p : Poly ListSig Nat :=
 
 | Item | Value |
 |------|-------|
-| Lean toolchain | `leanprover/lean4:v4.31.0-rc2` (`lean-toolchain`) |
+| Lean toolchain | `leanprover/lean4:v4.31.0` (`lean-toolchain`) |
 | Lake manifest | root `lake-manifest.json` |
 | Package version | `0.1.0` (`VERSION`) and `v!"0.1.0"` in `Lakefile.lean` |
 | SPDX license | `MIT` |
@@ -58,8 +58,22 @@ def p : Poly ListSig Nat :=
 ```bash
 lake build
 lake env lean FinalProductionTest.lean
+lake env lean Examples.lean
+lake env lean CSLibExamples.lean
 lake exe lean-containers
 ```
+
+Smoke examples: `Examples.lean` (core `Poly` / `W.fold` usage) and `CSLibExamples.lean`
+(transition-system trees). See `docs/transition-system-examples.md` for the latter.
+
+## Relation to Mathlib
+
+This package is mathlib-free by design. Mathlib already provides `PFunctor` and `WType` with
+equivalent mathematics in a different packaging. Local `Poly.map_*` and `W.fold_sup` lemmas are
+tuned for structure-based `Poly` values here, not for Mathlib's sigma presentation.
+
+For a detailed comparison and maintainer discussion template, see `docs/mathlib-overlap.md`.
+Future work is outlined in `docs/ROADMAP.md`.
 
 Windows release checks:
 
