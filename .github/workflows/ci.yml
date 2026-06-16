@@ -20,7 +20,7 @@ jobs:
     - name: Set up Lean 4
       uses: leanprover-community/setup-lean4@v2
       with:
-        lean-version: '4.31.0-rc2'
+        lean-version: '4.31.0'
         
     - name: Cache Lake dependencies
       uses: actions/cache@v3
@@ -34,7 +34,10 @@ jobs:
       run: lake build
       
     - name: Run tests
-      run: lake env lean FinalProductionTest.lean
+      run: |
+        lake env lean FinalProductionTest.lean
+        lake env lean Examples.lean
+        lake env lean CSLibExamples.lean
       
     - name: Test Makefile targets
       run: |

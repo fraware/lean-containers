@@ -32,9 +32,11 @@ run:
 	lake env lean Main.lean
 
 test:
-	@echo Running production tests...
+	@echo Running smoke tests...
 	lake build
 	lake env lean FinalProductionTest.lean
+	lake env lean Examples.lean
+	lake env lean CSLibExamples.lean
 	@echo All tests passed!
 
 build:
@@ -60,7 +62,7 @@ release-dry:
 	@echo 1. Building project...
 	lake build
 	@echo 2. Running tests...
-	lake env lean FinalProductionTest.lean
+	make -f Makefile.win test
 	@where docker >nul 2>&1 && (echo 3. Testing Docker build... && docker build -t lean-containers:test . && echo 4. Testing Docker run... && docker run --rm lean-containers:test) || echo 3. Skipping Docker tests (Docker not found)
 	@echo Release dry run completed successfully!
 
@@ -76,8 +78,7 @@ docker-run:
 
 # CI/CD targets
 ci-test:
-	lake build
-	lake env lean FinalProductionTest.lean
+	make -f Makefile.win test
 
 ci-build:
 	lake build

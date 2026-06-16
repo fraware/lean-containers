@@ -2,6 +2,11 @@
 # Containers
 
 Polynomial functors, container signatures, W-types, and related definitions.
+
+This module is mathlib-free: `Container` records a signature (`shape`, `pos`); `Poly sig`
+packages a shape with child labels; `W sig` is the initial algebra with recursion `W.fold`.
+See `Examples.lean` and `CSLibExamples.lean` for usage patterns, and
+`docs/mathlib-overlap.md` for Mathlib overlap notes.
 -/
 
 namespace Containers
@@ -64,8 +69,8 @@ instance {sig : Container} : Functor (Poly sig) where
 /-- Functor laws for polynomial functors -/
 instance {sig : Container} : LawfulFunctor (Poly sig) where
   map_const := rfl
-  id_map := fun _ => rfl
-  comp_map := fun _ _ _ => rfl
+  id_map := fun p => Poly.map_id p
+  comp_map := fun f g p => (Poly.map_comp f g p).symm
 
 -- Example: List as a container
 def ListSig : Container :=
