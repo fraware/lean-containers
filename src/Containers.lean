@@ -6,7 +6,7 @@ Polynomial functors, container signatures, W-types, and related definitions.
 This module is mathlib-free: `Container` records a signature (`shape`, `pos`); `Poly sig`
 packages a shape with child labels; `W sig` is the initial algebra with recursion `W.fold`.
 See `Examples.lean` and `CSLibExamples.lean` for usage patterns, and
-`docs/mathlib-overlap.md` for Mathlib overlap notes.
+`docs/upstream/MATHLIB_CONTAINER_AUDIT.md` for Mathlib overlap notes.
 -/
 
 namespace Containers

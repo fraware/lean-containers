@@ -53,6 +53,22 @@ def p : Poly ListSig Nat :=
 | Package version | `0.1.0` (`VERSION`) and `v!"0.1.0"` in `Lakefile.lean` |
 | SPDX license | `MIT` |
 
+## Build verification
+
+Verified on **Windows** with Lean **4.31.0** (stable, not an RC) on 2026-06-17:
+
+| Step | Command | Result |
+|------|---------|--------|
+| Update | `lake update` | Pass |
+| Build | `lake build` | Pass (3 jobs) |
+| Examples | `lake env lean Examples.lean` | Pass |
+| CSLib examples | `lake env lean CSLibExamples.lean` | Pass |
+| Production test | `lake env lean FinalProductionTest.lean` | Pass |
+| Executable | `lake exe lean-containers` | Pass |
+| Makefile (Windows) | `make -f Makefile.win test` | Pass |
+
+CI (`.github/workflows/ci.yml`) and `Dockerfile` also pin Lean **4.31.0**.
+
 ## Local development
 
 ```bash
@@ -72,8 +88,8 @@ This package is mathlib-free by design. Mathlib already provides `PFunctor` and 
 equivalent mathematics in a different packaging. Local `Poly.map_*` and `W.fold_sup` lemmas are
 tuned for structure-based `Poly` values here, not for Mathlib's sigma presentation.
 
-For a detailed comparison and maintainer discussion template, see `docs/mathlib-overlap.md`.
-Future work is outlined in `docs/ROADMAP.md`.
+For the full Mathlib audit, see `docs/upstream/MATHLIB_CONTAINER_AUDIT.md` (summary:
+`docs/mathlib-overlap.md`). Future work is outlined in `docs/ROADMAP.md`.
 
 Windows release checks:
 

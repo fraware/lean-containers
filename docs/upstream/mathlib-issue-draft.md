@@ -1,6 +1,7 @@
 # Mathlib issue draft (copy-paste ready)
 
-Use this file to open a Mathlib discussion issue. Distilled from `docs/mathlib-overlap.md`.
+Use this file to open a Mathlib discussion issue. Distilled from
+`docs/upstream/MATHLIB_CONTAINER_AUDIT.md`.
 
 ---
 
@@ -52,7 +53,7 @@ The first deliverable should be maintainer feedback on duplication risk and nami
 
 ### References
 
-- Local overlap notes: `docs/mathlib-overlap.md` in lean-containers
+- Full audit: `docs/upstream/MATHLIB_CONTAINER_AUDIT.md` in lean-containers
 - Key Mathlib files: `Data/PFunctor/Univariate/Basic.lean`, `Data/W/Basic.lean`,
   `Data/PFunctor/Multivariate/W.lean`
 

@@ -1,7 +1,7 @@
 # Transition-system examples
 
-Documentation for `CSLibExamples.lean`: finite execution trees as W-types over container
-signatures, without Mathlib or external library dependencies.
+Documentation for [`CSLibExamples.lean`](../CSLibExamples.lean): finite execution trees as W-types
+over container signatures, without Mathlib or external library dependencies.
 
 ## What the examples demonstrate
 
@@ -27,14 +27,16 @@ degree at `s`. Values of `W sig` are finite execution trees built from those tra
 
 ## Using these patterns elsewhere
 
-The examples are self-contained in `CSLibExamples.lean`. To reuse the pattern in another project:
+The examples are self-contained in [`CSLibExamples.lean`](../CSLibExamples.lean). To reuse the
+pattern in another project:
 
 1. Define control states as `shape` and successor slots as `pos s`.
 2. Build executions with `W.sup` and interpret them with `W.fold` algebras.
 3. Compare with Mathlib's `PFunctor` / `WType` packaging if you already depend on Mathlib; see
-   `docs/mathlib-overlap.md`.
+   `docs/upstream/MATHLIB_CONTAINER_AUDIT.md` (summary: `docs/mathlib-overlap.md`).
 
 ## Related reading
 
-- Core API examples: `Examples.lean`
-- Mathlib comparison: `docs/mathlib-overlap.md`
+- Core API examples: [`Examples.lean`](../Examples.lean)
+- Mathlib audit: [`docs/upstream/MATHLIB_CONTAINER_AUDIT.md`](upstream/MATHLIB_CONTAINER_AUDIT.md)
+  (summary: [`docs/mathlib-overlap.md`](mathlib-overlap.md))

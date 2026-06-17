@@ -15,7 +15,7 @@ mathlib-free core API.
 
 - **Categorical bridge:** interpret `Poly sig` as an endofunctor on `Type`, container morphisms, and
   W-types as initial algebras. Requires alignment with Mathlib conventions; see
-  `docs/mathlib-overlap.md`.
+  `docs/upstream/MATHLIB_CONTAINER_AUDIT.md` (summary: `docs/mathlib-overlap.md`).
 - **`M sig` development:** the nominal `M` type is a placeholder, not a final-coalgebra API.
 - **Additional examples:** more W-type interpretations and container signatures as use cases arise.
 
