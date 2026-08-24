@@ -2,7 +2,7 @@
 # Multi-stage build for optimal image size
 
 # Build stage
-FROM leanprover/lean4:4.31.0 AS builder
+FROM leanprover/lean4:4.34.0-rc2 AS builder
 
 # Set working directory
 WORKDIR /app
@@ -14,7 +14,7 @@ COPY . .
 RUN lake update && lake build
 
 # Runtime stage
-FROM leanprover/lean4:4.31.0 AS runtime
+FROM leanprover/lean4:4.34.0-rc2 AS runtime
 ARG VERSION=dev
 
 # Set working directory
