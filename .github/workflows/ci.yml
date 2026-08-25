@@ -28,9 +28,7 @@ jobs:
       uses: actions/cache@v4
       with:
         path: .lake
-        key: ${{ runner.os }}-lake-${{ hashFiles('lean-toolchain', 'lake-manifest.json', 'Lakefile.lean') }}
-        restore-keys: |
-          ${{ runner.os }}-lake-
+        key: ${{ runner.os }}-lake-${{ hashFiles('lean-toolchain', 'lake-manifest.json', 'lakefile.lean') }}
 
     - name: Refresh dependencies
       run: lake update
@@ -127,7 +125,7 @@ jobs:
         TAG="${{ steps.release_vars.outputs.tag }}"
         mkdir -p release
         cp -r src release/
-        cp Lakefile.lean release/
+        cp lakefile.lean release/
         cp VERSION release/
         cp lake-manifest.json release/
         cp lean-toolchain release/
