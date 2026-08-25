@@ -2,7 +2,7 @@
 # Multi-stage build for optimal image size
 
 # Build stage
-FROM leanprover/lean4:4.31.0 AS builder
+FROM leanprover/lean4:4.34.0-rc2 AS builder
 
 # Set working directory
 WORKDIR /app
@@ -14,7 +14,7 @@ COPY . .
 RUN lake update && lake build
 
 # Runtime stage
-FROM leanprover/lean4:4.31.0 AS runtime
+FROM leanprover/lean4:4.34.0-rc2 AS runtime
 ARG VERSION=dev
 
 # Set working directory
@@ -23,7 +23,7 @@ WORKDIR /app
 # Copy built artifacts from builder stage (Lake outputs live under .lake/)
 COPY --from=builder /app/.lake /app/.lake
 COPY --from=builder /app/lake-manifest.json /app/lake-manifest.json
-COPY --from=builder /app/Lakefile.lean /app/Lakefile.lean
+COPY --from=builder /app/lakefile.lean /app/lakefile.lean
 COPY --from=builder /app/lean-toolchain /app/lean-toolchain
 COPY --from=builder /app/src /app/src
 COPY --from=builder /app/Main.lean /app/Main.lean

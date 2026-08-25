@@ -29,7 +29,7 @@ Thanks for contributing to `lean-containers`.
 ## Versioning and releases
 
 - Canonical version is in `VERSION` as `X.Y.Z`.
-- `Lakefile.lean` must match with `version := v!"X.Y.Z"`.
+- `lakefile.lean` must match with `version := v!"X.Y.Z"`.
 - Git tags use `vX.Y.Z`.
 - Release artifacts are named `lean-containers-vX.Y.Z.tar.gz`.
 
