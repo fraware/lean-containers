@@ -9,7 +9,7 @@ The package is intentionally small, mathlib-free, and focused on a clear core AP
 
 ## Install and import
 
-Add this to your `Lakefile.lean`:
+Add this to your `lakefile.lean`:
 
 ```lean
 require lean-containers from git
@@ -48,17 +48,19 @@ def p : Poly ListSig Nat :=
 
 | Item | Value |
 |------|-------|
-| Lean toolchain | `leanprover/lean4:v4.31.0` (`lean-toolchain`) |
+| Lean toolchain | `leanprover/lean4:v4.34.0-rc2` (`lean-toolchain`) |
 | Lake manifest | root `lake-manifest.json` |
-| Package version | `0.1.0` (`VERSION`) and `v!"0.1.0"` in `Lakefile.lean` |
+| Package version | `0.1.0` (`VERSION`) and `v!"0.1.0"` in `lakefile.lean` |
 | SPDX license | `MIT` |
 
 ## Build verification
 
-Verified on **Windows** with Lean **4.31.0** (stable, not an RC) on 2026-06-17:
+The repository is currently being revalidated on Lean **4.34.0-rc2**. Current compatibility should be inferred only from the latest successful CI run for the pinned toolchain.
 
-| Step | Command | Result |
-|------|---------|--------|
+The previous recorded full verification was on **Windows** with Lean **4.31.0** on 2026-06-17 and is retained here as historical evidence only:
+
+| Step | Command | Historical result |
+|------|---------|-------------------|
 | Update | `lake update` | Pass |
 | Build | `lake build` | Pass (3 jobs) |
 | Examples | `lake env lean Examples.lean` | Pass |
@@ -67,7 +69,7 @@ Verified on **Windows** with Lean **4.31.0** (stable, not an RC) on 2026-06-17:
 | Executable | `lake exe lean-containers` | Pass |
 | Makefile (Windows) | `make -f Makefile.win test` | Pass |
 
-CI (`.github/workflows/ci.yml`) and `Dockerfile` also pin Lean **4.31.0**.
+CI (`.github/workflows/ci.yml`) and `Dockerfile` target Lean **4.34.0-rc2**.
 
 ## Local development
 
