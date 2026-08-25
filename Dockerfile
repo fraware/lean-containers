@@ -23,7 +23,7 @@ WORKDIR /app
 # Copy built artifacts from builder stage (Lake outputs live under .lake/)
 COPY --from=builder /app/.lake /app/.lake
 COPY --from=builder /app/lake-manifest.json /app/lake-manifest.json
-COPY --from=builder /app/Lakefile.lean /app/Lakefile.lean
+COPY --from=builder /app/lakefile.lean /app/lakefile.lean
 COPY --from=builder /app/lean-toolchain /app/lean-toolchain
 COPY --from=builder /app/src /app/src
 COPY --from=builder /app/Main.lean /app/Main.lean
