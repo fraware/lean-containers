@@ -33,8 +33,8 @@ if [ $# -eq 1 ]; then
   fi
 fi
 
-if ! grep -Eq "[[:space:]]*version[[:space:]]*:=.*v!\"${VERSION}\"" Lakefile.lean; then
-  echo "[ERROR] Lakefile.lean must set version := v!\"${VERSION}\" to match VERSION file."
+if ! grep -Eq "[[:space:]]*version[[:space:]]*:=.*v!\"${VERSION}\"" lakefile.lean; then
+  echo "[ERROR] lakefile.lean must set version := v!\"${VERSION}\" to match VERSION file."
   exit 1
 fi
 
