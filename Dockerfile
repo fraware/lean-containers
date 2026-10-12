@@ -4,16 +4,16 @@
 # Pinned OS base; elan installs the Lean revision declared by lean-toolchain.
 FROM ubuntu:24.04 AS lean-base
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update \\
-    && apt-get install -y --no-install-recommends ca-certificates curl git build-essential zstd \\
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates curl git build-essential zstd \
     && rm -rf /var/lib/apt/lists/*
 ENV PATH="/root/.elan/bin:${PATH}"
 WORKDIR /app
 COPY lean-toolchain ./lean-toolchain
-RUN curl -fsSL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh \\
-    | sh -s -- -y --default-toolchain none \\
-    && elan toolchain install "$(sed -n '1p' lean-toolchain | tr -d '\\r')" \\
-    && elan default "$(sed -n '1p' lean-toolchain | tr -d '\\r')" \\
+RUN curl -fsSL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh \
+    | sh -s -- -y --default-toolchain none \
+    && elan toolchain install "$(head -n 1 lean-toolchain)" \
+    && elan default "$(head -n 1 lean-toolchain)" \
     && lake --version
 
 # Build stage
