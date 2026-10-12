@@ -5,14 +5,14 @@ This document describes the release process for this repository.
 ## Release source of truth
 
 - `VERSION` contains the canonical semantic version `X.Y.Z`.
-- `Lakefile.lean` must set `version := v!"X.Y.Z"` to the same value.
+- `lakefile.lean` must set `version := v!"X.Y.Z"` to the same value.
 - Git release tag must be `vX.Y.Z`.
 - Release archive name must be `lean-containers-vX.Y.Z.tar.gz`.
 
 ## Required repo-root artifacts
 
 - `lake-manifest.json`
-- `Lakefile.lean`
+- `lakefile.lean`
 - `lean-toolchain`
 - `VERSION`
 - `LICENSE`
@@ -47,6 +47,6 @@ On GitHub Release:
 ## Bump procedure
 
 1. Update `VERSION` to target `X.Y.Z`.
-2. Update `Lakefile.lean` `version := v!"X.Y.Z"` to match.
+2. Update `lakefile.lean` `version := v!"X.Y.Z"` to match.
 3. Run validation checklist.
 4. Tag and publish `vX.Y.Z`.

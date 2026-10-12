@@ -9,7 +9,7 @@ The package is intentionally small, mathlib-free, and focused on a clear core AP
 
 ## Install and import
 
-Add this to your `Lakefile.lean`:
+Add this to your `lakefile.lean`:
 
 ```lean
 require lean-containers from git
@@ -50,7 +50,7 @@ def p : Poly ListSig Nat :=
 |------|-------|
 | Lean toolchain | `leanprover/lean4:v4.31.0` (`lean-toolchain`) |
 | Lake manifest | root `lake-manifest.json` |
-| Package version | `0.1.0` (`VERSION`) and `v!"0.1.0"` in `Lakefile.lean` |
+| Package version | `0.1.0` (`VERSION`) and `v!"0.1.0"` in `lakefile.lean` |
 | SPDX license | `MIT` |
 
 ## Build verification

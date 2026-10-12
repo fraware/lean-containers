@@ -4,7 +4,7 @@ REM Release script for lean-containers (Windows version)
 setlocal enabledelayedexpansion
 
 REM Check if we're in the right directory
-if not exist "Lakefile.lean" (
+if not exist "lakefile.lean" (
     echo [ERROR] Please run this script from the project root directory
     exit /b 1
 )
@@ -54,7 +54,7 @@ echo [INFO] Creating release archive...
 if exist release rmdir /s /q release
 mkdir release
 xcopy src release\src\ /e /i /q
-copy Lakefile.lean release\
+copy lakefile.lean release\
 copy lake-manifest.json release\
 copy lean-toolchain release\
 copy Main.lean release\
