@@ -2,7 +2,7 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, master, "audit/**" ]
   pull_request:
     branches: [ main, master ]
   release:
@@ -12,33 +12,36 @@ jobs:
   test:
     name: Test and Build
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      
-    - name: Set up Lean 4
-      uses: leanprover-community/setup-lean4@v2
-      with:
-        lean-version: '4.31.0'
-        
+
+    - name: Install Lean toolchain
+      run: |
+        curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y
+        echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+        "$HOME/.elan/bin/elan" install "$(cat lean-toolchain)"
+        "$HOME/.elan/bin/elan" default "$(cat lean-toolchain)"
+
     - name: Cache Lake dependencies
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
-        path: .lake/packages
-        key: ${{ runner.os }}-lake-${{ hashFiles('lake-manifest.json') }}
-        restore-keys: |
-          ${{ runner.os }}-lake-
-          
+        path: .lake
+        key: ${{ runner.os }}-lake-${{ hashFiles('lean-toolchain', 'lake-manifest.json', 'lakefile.lean') }}
+
+    - name: Refresh dependencies
+      run: lake update
+
     - name: Build project
       run: lake build
-      
+
     - name: Run tests
       run: |
         lake env lean FinalProductionTest.lean
         lake env lean Examples.lean
         lake env lean CSLibExamples.lean
-      
+
     - name: Test Makefile targets
       run: |
         make build
@@ -48,20 +51,20 @@ jobs:
     name: Docker Build and Test
     runs-on: ubuntu-latest
     needs: test
-    
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      
+
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
-      
+
     - name: Build Docker image
       run: docker build -t lean-containers:test .
-      
+
     - name: Test Docker image
       run: docker run --rm lean-containers:test
-      
+
     - name: Test Docker with custom command
       run: docker run --rm lean-containers:test FinalProductionTest.lean
 
@@ -70,21 +73,21 @@ jobs:
     runs-on: ubuntu-latest
     needs: [test, docker]
     if: github.event_name == 'release'
-    
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      
+
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
-      
+
     - name: Log in to GitHub Container Registry
       uses: docker/login-action@v3
       with:
         registry: ghcr.io
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
-        
+
     - name: Extract metadata
       id: meta
       uses: docker/metadata-action@v5
@@ -106,7 +109,7 @@ jobs:
         VERSION="${TAG#v}"
         echo "tag=$TAG" >> "$GITHUB_OUTPUT"
         echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          
+
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
@@ -116,13 +119,13 @@ jobs:
         labels: ${{ steps.meta.outputs.labels }}
         build-args: |
           VERSION=${{ steps.release_vars.outputs.version }}
-        
+
     - name: Create Release Artifacts
       run: |
         TAG="${{ steps.release_vars.outputs.tag }}"
         mkdir -p release
         cp -r src release/
-        cp Lakefile.lean release/
+        cp lakefile.lean release/
         cp VERSION release/
         cp lake-manifest.json release/
         cp lean-toolchain release/
@@ -130,7 +133,7 @@ jobs:
         cp FinalProductionTest.lean release/
         cp LICENSE release/
         tar -czf lean-containers-${TAG}.tar.gz -C release .
-        
+
     - name: Upload Release Artifacts
       uses: actions/upload-release-asset@v1
       env:

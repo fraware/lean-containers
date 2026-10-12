@@ -32,11 +32,11 @@ if not "%~1"=="" (
 )
 
 setlocal DisableDelayedExpansion
-findstr /C:"version := v!\"%VERSION%\"" Lakefile.lean >nul
+findstr /C:"version := v!\"%VERSION%\"" lakefile.lean >nul
 set MATCH_ERR=%errorlevel%
 endlocal & set MATCH_ERR=%MATCH_ERR%
 if %MATCH_ERR% neq 0 (
-  echo [ERROR] Lakefile.lean must set version := v!\"%VERSION%\" to match VERSION file.
+  echo [ERROR] lakefile.lean must set version := v!\"%VERSION%\" to match VERSION file.
   exit /b 1
 )
 

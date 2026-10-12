@@ -23,12 +23,12 @@ print_error() {
 }
 
 # Check if we're in the right directory
-if [ ! -f "Lakefile.lean" ]; then
+if [ ! -f "lakefile.lean" ]; then
     print_error "Please run this script from the project root directory"
     exit 1
 fi
 
-# Version: single line in VERSION (X.Y.Z), must match Lakefile package version
+# Version: single line in VERSION (X.Y.Z), must match Lake package version
 if [ ! -f "VERSION" ]; then
     print_error "VERSION file missing at repository root"
     exit 1
@@ -75,7 +75,7 @@ fi
 print_status "Creating release archive..."
 mkdir -p release
 cp -r src release/
-cp Lakefile.lean release/
+cp lakefile.lean release/
 cp lake-manifest.json release/
 cp lean-toolchain release/
 cp Main.lean release/
